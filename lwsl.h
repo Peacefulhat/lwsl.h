@@ -22,7 +22,7 @@ typedef struct
 
 typedef struct
 {
-    char* Str;
+    const char* Data;
     size_t Count;
 }string_view;
 
@@ -30,6 +30,10 @@ size_t GetFileSize(const char* FilePath);
 string_builder* InitStringBuilderWithCapacity(size_t Capacity);
 void AppendCstrToStringBuilder(string_builder* Sb, const char* Cstr);
 void ReadEntireFile(string_builder* Sb, const char* FilePath);
+void FreeStringBuilder(string_builder* Sb);
+string_view* InitStringViewWithStringBuilder(string_builder* Sb);
+string_view* InitStringView(char* Data, size_t Count);
+void FreeStringView(string_view* Sv);
 
 #endif // LWSL_H
 
@@ -53,8 +57,16 @@ size_t GetFileSize(const char* FilePath)
 string_builder* InitStringBuilderWithCapacity(size_t Capacity)
 {
     string_builder* Result = (string_builder*)malloc(sizeof(string_builder));
+    if(!Result)
+    {
+        return NULL;
+    }
     Result->Capacity = Capacity;
     Result->Str = (char*)malloc(Result->Capacity * sizeof(char));
+    if(!Result)
+    {
+        return NULL;
+    }
     Result->Count = 0;
     return(Result);
 }
@@ -108,4 +120,44 @@ void ReadEntireFile(string_builder* Sb, const char* FilePath)
     fclose(Fp);
 }
 
+string_view* InitStringViewWithStringBuilder(string_builder* Sb)
+{
+    string_view* Sv = (string_view*)malloc(sizeof(string_view));
+    if(!Sv)
+    {
+        return NULL;
+    }
+    Sv->Data = Sb->Str;
+    Sv->Count = Sb->Count;
+    return(Sv);
+}
+
+string_view* InitStringView(char* Data, size_t Count)
+{
+    string_view* Sv = (string_view*)malloc(sizeof(string_view));
+    if(!Sv)
+    {
+        return NULL;
+    }
+    Sv->Data = Data;
+    Sv->Count = Count;
+    return(Sv);
+}
+
+void FreeStringBuilder(string_builder* Sb)
+{
+    if(Sb)
+    {
+        free(Sb->Str);
+        free(Sb);
+    }
+}
+
+void FreeStringView(string_view* Sv)
+{
+    if(Sv)
+    {
+        free(Sv);
+    }
+}
 #endif // LWSL_IMPLEMENTATION
