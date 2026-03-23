@@ -85,6 +85,8 @@ do{                                                             \
     }                                                           \
 }while(0)
 
+#define PRINT_STRING_VIEW(Sv) printf("%.*s \nCount:: %zu", (Sv)->Count, (Sv)->Data, (Sv)->Count)
+
 void AppendCstrToStringBuilder(string_builder* Sb, const char* Cstr)
 {
     size_t Length = strlen(Cstr);
